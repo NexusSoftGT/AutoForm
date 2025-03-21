@@ -104,7 +104,7 @@ const Page = () => {
       {/* Form Fields */}
       <form className="space-y-4 mt-4">
         <div>
-          <label htmlFor="policyNo" className="block text-sm font-medium text-gray-700">Policy No.</label>
+          <label htmlFor="policyNo" className="block text-sm font-medium text-gray-700">Policy No</label>
           <input
             type="text"
             id="policyNo"
@@ -117,7 +117,7 @@ const Page = () => {
         </div>
 
         <div>
-          <label htmlFor="certificateNo" className="block text-sm font-medium text-gray-700">SL No./Certificate No.</label>
+          <label htmlFor="certificateNo" className="block text-sm font-medium text-gray-700">SL No./Certificate No</label>
           <input
             type="text"
             id="certificateNo"
@@ -130,7 +130,7 @@ const Page = () => {
         </div>
 
         <div>
-          <label htmlFor="companyId" className="block text-sm font-medium text-gray-700">Company/TPA ID No.</label>
+          <label htmlFor="companyId" className="block text-sm font-medium text-gray-700">Company/TPA ID No</label>
           <input
             type="text"
             id="companyId"
