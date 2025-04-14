@@ -2,12 +2,13 @@ import os
 from groq import Groq
 import base64
 import cv2
+import json  # Import json for parsing the response
 
 
-os.environ['GROQ_API_KEY'] = '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'
+os.environ['GROQ_API_KEY'] = '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'
 
 
-def main ():
+def main():
     # Load image
     image = cv2.imread('./form-1.png')  # Provide the correct image path
 
@@ -46,7 +47,31 @@ def main ():
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": "Extract field name & its respective value pairs from the form and return in JSON format."},
+                    {"type": "text", 
+                     "text": """
+                        Please extract the following fields from the insurance claim form image. Ensure that the values are returned in the exact format specified below.
+
+                        Fields to extract:
+                        1. Policy No. (Alphanumeric characters, max length 30)
+                        2. SL No./Certificate No. (Digits only, 10-15 characters)
+                        3. Company/TPA ID No. (Alphanumeric, 10-15 characters)
+                        4. Name (Full name, first name and last name)
+                        5. Address (Complete address, with street and city)
+                        6. City (City name, full form, no abbreviations)
+
+                        The output should follow this **exact JSON** format, with **double quotes** and no extra spaces:
+                        {
+                            "Policy No.": "IJKLEFGHIJKL1234567890ABXZ",
+                            "SL No./Certificate No.": "12345321342",
+                            "Company/TPA ID No.": "eweZGK4321",
+                            "Name": "Sohaib Shamsi",
+                            "Address": "1209 35th Cross Block Jayanagar",
+                            "City": "Karachi"
+                        }
+                         
+                        If a field is missing or unreadable, return an empty string for that field. 
+                        Do not include any extra characters like single quotes or extra spaces.
+                    """},
                     {
                         "type": "image_url",
                         "image_url": {
@@ -64,10 +89,34 @@ def main ():
         stop=None,
     )
 
+    # Extracting the fields and structuring them in the desired format
+    extracted_data = completion.choices[0].message.content
+    
+    # Try parsing the extracted data as JSON
+    try:
+        data = json.loads(extracted_data)  # Attempt to parse the string as JSON
+    except json.JSONDecodeError:
+        print("Error parsing response as JSON:", extracted_data)  # Print error and raw response
+        data = {}
 
-    return completion.choices[0].message.content
+    formatted_data = format_extracted_data(data)
+    
+    return formatted_data
+
+
+def format_extracted_data(data):
+    # Map the extracted data into the required format
+    formatted_json = {
+        "Policy No.": data.get("Policy No.", ""),
+        "SL No./Certificate No.": data.get("SL No./Certificate No.", ""),
+        "Company/TPA ID No.": data.get("Company/TPA ID No.", ""),
+        "Name": data.get("Name", ""),
+        "Address": data.get("Address", ""),
+        "City": data.get("City", "")
+    }
+    
+    return formatted_json
 
 
 if __name__ == "__main__":
     print(main())
-
